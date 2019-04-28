@@ -35,7 +35,7 @@ router.post("/Add", async (req, res, next) => {
 });
 
 //-----------------------------Update Book --------------------------------//
-router.patch('/:bookId' , (req,res,next)=>{
+router.patch('/:bookId/edit' , (req,res,next)=>{
     Book.findByIdAndUpdate(req.params.bookId, req.body ,{ new:true})
     .then(book=>{
         res.send(book);
