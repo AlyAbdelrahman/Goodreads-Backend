@@ -1,8 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const createError = require("http-errors");
-const userModel = require("../models//user");
-const bookModel = require("../models/Book");
+const userModel = require("../models/user");
 const authMiddleware = require("../middlewares/User_Authentication");
 
 router.post("/register", async function(req, res, next) {
@@ -42,65 +41,109 @@ router.get("/profile", async function(req, res, next) {
       next(createError(404, err.message));
     });
 });
-
-router.get("/books/all", async function(req, res, next) {
+router.get("/books/:pageNum", async function(req, res, next) {
+  var perPage = 4;
+  var page = req.params.pageNum || 1;
+  var result = [];
+  userModel
+    .findById(req.user._id)
+    .populate("books.bookId")
+    .exec()
+    .then(b => {
+      result = b.books.slice(perPage * page - perPage, perPage * page);
+      // console.log(result);
+      res.send(result);
+    })
+    .catch(err => next(createError(500, err.message)));
+});
+router.get("/all-Books/:pageNum", async function(req, res, next) {
+  var perPage = 4;
+  var page = req.params.pageNum || 1;
+  var result = [];
   userModel
     .findById(req.user._id)
     .populate("books.bookId")
     .exec()
     .then(current => {
-      res.send(current.books);
+      result = current.books.slice(perPage * page - perPage, perPage * page);
+      let amount = current.books.length;
+      if (result.length == 0) {
+        return true;
+      } else {
+        res.send({
+          result: result,
+          amount
+        });
+      }
     })
     .catch(err => {
       next(createError(404, err.message));
     });
 });
 
-router.get("/books/read", async function(req, res, next) {
+router.get("/read-Books/:pageNum", async function(req, res, next) {
+  var perPage = 4;
+  var page = req.params.pageNum || 1;
+  var result = [];
   userModel
     .findById(req.user._id)
     .populate("books.bookId")
     .exec()
     .then(current => {
-      res.send(
-        current.books.filter(book => {
-          if (book.status === "read") return book;
-        })
-      );
+      result = current.books.filter(book => {
+        if (book.status === "read") return book;
+      });
+      let amount = result.length;
+      res.send({
+        result: result.slice(perPage * page - perPage, perPage * page),
+        amount
+      });
     })
     .catch(err => {
       next(createError(404, err.message));
     });
 });
 
-router.get("/books/wanttoread", async function(req, res, next) {
+router.get("/wanttoread-Books/:pageNum", async function(req, res, next) {
+  var perPage = 4;
+  var page = req.params.pageNum || 1;
+  var result = [];
   userModel
     .findById(req.user._id)
     .populate("books.bookId")
     .exec()
     .then(current => {
-      res.send(
-        current.books.filter(book => {
-          if (book.status === "want to read") return book;
-        })
-      );
+      result = current.books.filter(book => {
+        if (book.status === "want to read") return book;
+      });
+      let amount = result.length;
+      res.send({
+        result: result.slice(perPage * page - perPage, perPage * page),
+        amount
+      });
     })
     .catch(err => {
       next(createError(404, err.message));
     });
 });
 
-router.get("/books/currentlyreading", async function(req, res, next) {
+router.get("/currentlyreading-Books/:pageNum", async function(req, res, next) {
+  var perPage = 4;
+  var page = req.params.pageNum || 1;
+  var result = [];
   userModel
     .findById(req.user._id)
     .populate("books.bookId")
     .exec()
     .then(current => {
-      res.send(
-        current.books.filter(book => {
-          if (book.status === "currently reading") return book;
-        })
-      );
+      result = current.books.filter(book => {
+        if (book.status === "currently reading") return book;
+      });
+      let amount = result.length;
+      res.send({
+        result: result.slice(perPage * page - perPage, perPage * page),
+        amount
+      });
     })
     .catch(err => {
       next(createError(404, err.message));
@@ -108,36 +151,22 @@ router.get("/books/currentlyreading", async function(req, res, next) {
 });
 
 router.post("/book/edit/:id", async function(req, res, next) {
-  // status or rate
-
   const { status, rate } = req.body;
 
   if (status) {
     req.user.books.find(book => {
-      if (req.params.id === book.bookId.toString()) book["status"] = status;
+      if (req.params.id == book.bookId._id.toString()) book["status"] = status;
     });
   }
   if (rate) {
     req.user.books.find(book => {
-      const id = book.bookId.toString();
-      if (id === bookId) book["rate"] = rate;
+      if (book.bookId._id.toString() == req.params.id) book["rating"] = rate;
     });
   }
-
   userModel.findByIdAndUpdate(req.user._id, { books: req.user.books }, { new: true }, (err, result) => {
     if (err) next(createError(404, err.message));
     res.send(result);
   });
 });
-
-// router.post("/book/add", async function(req, res, next) {
-//   newBook = req.body;
-//   const { bookId, status } = newBook;
-//   req.user.books.push({ bookId: bookId, rate: 0, status: status });
-//   userModel.findByIdAndUpdate(req.user._id, { books: req.user.books }, { new: true }, (err, result) => {
-//     if (err) next(createError(404, err.message));
-//     res.send(result);
-//   });
-// });
 
 module.exports = router;

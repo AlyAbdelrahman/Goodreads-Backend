@@ -15,19 +15,19 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "name required"],
+      required: true,
       minlength: 3,
       match: /^[a-zA-Z ]+[a-zA-Z]$/
     },
     email: {
       type: String,
       validate: validator.isEmail,
-      unique: [true, "email must be unique"],
-      required: [true, "email required"]
+      unique: [true,"Duplicated"],
+      required: true
     },
     password: {
       type: String,
-      required: [true, "password required"],
+      required: true,
       hidden: true
     },
     photo: {
@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema(
     },
     books: [
       {
-        bookId: { type: mongoose.Schema.Types.ObjectId, ref: "Book" }, // Using Population
+        bookId: { type: mongoose.Schema.Types.ObjectId, ref: "Books" }, // Using Population
         rating: { type: String, default: "0" },
         status: { type: String, lowercase: true, enum: ["want to read", "read", "currently reading"] }
       }
