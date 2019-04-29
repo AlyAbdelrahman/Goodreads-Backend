@@ -1,5 +1,5 @@
 var express = require('express');
-const Category = require('../models/Category');
+const Category = require('../models/category');
 const createError = require('http-errors');
 var router = express.Router();
 

@@ -1,8 +1,8 @@
 var express = require("express");
-const Book = require("../models/Book");
+const Book = require("../models/book");
 const createError = require("http-errors");
-const CategoryModel = require("../models/Category");
-const bookModel = require("../models/Book");
+const CategoryModel = require("../models/category");
+const bookModel = require("../models/book");
 const userAuthorization = require("./../middlewares/User_Authentication");
 var router = express.Router();
 
