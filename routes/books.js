@@ -22,22 +22,17 @@ router.get("/:bookId", (req, res, next) => {
     .catch(err => next(createError(404, err.message)));
 });
 
-router.post("/search", userAuthorization, async function(req, res, next) {
-  bookModel
-    .find({})
-
-    .exec()
-    .then(all => {
-      res.send(
-        all.filter(book => {
-          if (book.name.toLowerCase().includes(req.body.name.toLowerCase())) return book;
-        })
-      );
-    })
-    .catch(err => {
-      next(createError(404, err.message));
-    });
-});
+// router.post("/search", async function(req, res, next) {
+//   bookModel
+//     .find({})
+//     .exec()
+//     .then(all => {
+//
+//     })
+//     .catch(err => {
+//       next(createError(404, err.message));
+//     });
+// });
 
 //------------------------------Add----------------------------------------------//
 router.post("/Add", async (req, res, next) => {

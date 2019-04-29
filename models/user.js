@@ -5,9 +5,9 @@ const validator = require("validator");
 const util = require("util");
 const jwtSignPromise = util.promisify(jwt.sign);
 const jwtVerifyPromise = util.promisify(jwt.verify);
-const bookModel = require("./Book");
+// const bookModel = require("./Book");
 
-const jwtKey = "secretKey";
+const jwtKey = process.env.JWT_SECRET || "secretKey";
 
 const saltRounds = 5;
 
@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       validate: validator.isEmail,
-      unique: [true,"Duplicated"],
+      unique: [true, "Duplicated"],
       required: true
     },
     password: {

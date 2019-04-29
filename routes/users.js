@@ -158,6 +158,15 @@ router.post("/book/edit/:id", async function(req, res, next) {
       if (req.params.id == book.bookId._id.toString()) book["status"] = status;
     });
   }
+
+  // if (status || rate) {
+  //   req.user.books.find(book => {
+  //     if (req.params.id == book.bookId._id.toString()) {
+  //       book["status"] = status;
+  //       book["rating"] = rate;
+  //     }
+  //   });
+  // }
   if (rate) {
     req.user.books.find(book => {
       if (book.bookId._id.toString() == req.params.id) book["rating"] = rate;
