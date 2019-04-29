@@ -4,6 +4,15 @@ const authMiddleware = require("./../middlewares/admin_Authentication");
 const Author = require("../models/AuthorModel");
 const createError = require("http-errors");
 
+// //-------------------------------------------GetAll----------------------------------------------------------//
+router.get("/GetAll", async function(req, res, next) {
+  let author = await Author.find({}, function(error, data) {
+    return data;
+  });
+  res.json(author);
+});
+
+/////// Authorization middleware Should be Here ///////////////////////
 //--------------------------------------  Get Specific User  ---------------------------------------------------------------------
 router.get("/:authorId", async function(req, res, next) {
   Author.findById(req.params.authorId)
@@ -15,15 +24,6 @@ router.get("/:authorId", async function(req, res, next) {
       next(createError(404, err.message));
     });
 });
-//-------------------------------------------GetAll----------------------------------------------------------//
-router.get("/GetAll", async function(req, res, next) {
-  let author = await Author.find({}, function(error, data) {
-    return data;
-  });
-  res.json(author);
-});
-
-/////// Authorization middleware Should be Here ///////////////////////
 //-------------------------------------------Add----------------------------------------------------------//
 
 router.post("/Add", function(req, res, next) {
